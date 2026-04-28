@@ -1,0 +1,77 @@
+.main-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(135deg, #141e30, #243b55);
+}
+
+/* Glass Card */
+.dashboard-card {
+    width: 420px;
+    padding: 30px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+
+    text-align: center;
+    color: white;
+
+    transform: perspective(1000px) rotateX(6deg);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: perspective(1000px) rotateX(0deg) scale(1.03);
+}
+
+.title {
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+.center-btn {
+    display: flex;
+    justify-content: center;
+}
+
+/* Modal */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background: rgba(0,0,0,0.7);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-container {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    width: 380px;
+
+    animation: pop 0.25s ease;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+@keyframes pop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}

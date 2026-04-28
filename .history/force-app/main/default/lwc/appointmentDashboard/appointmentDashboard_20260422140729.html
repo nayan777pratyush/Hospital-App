@@ -1,0 +1,58 @@
+<template>
+    <lightning-card title="Appointment Dashboard" icon-name="standard:appointment">
+
+        <!-- BUTTON -->
+        <div class="slds-p-around_medium">
+            <lightning-button 
+                label="New Appointment" 
+                variant="brand" 
+                onclick={openModal}>
+            </lightning-button>
+        </div>
+
+        <!-- MODAL -->
+        <template if:true={isModalOpen}>
+            <section role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Create Appointment</h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium">
+
+                        <lightning-combobox
+                            label="Patient"
+                            value={patientId}
+                            options={patientOptions}
+                            onchange={handlePatient}>
+                        </lightning-combobox>
+
+                        <lightning-combobox
+                            label="Doctor"
+                            value={doctorId}
+                            options={doctorOptions}
+                            onchange={handleDoctor}>
+                        </lightning-combobox>
+                        <lightning-input type="date" label="Date" value={date} onchange={handleDate}></lightning-input>
+                        <lightning-combobox 
+                            label="Status"
+                            value={status}
+                            options={statusOptions}
+                            onchange={handleStatus}>
+                        </lightning-combobox>
+
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+                        <lightning-button variant="brand" label="Save" onclick={saveAppointment}></lightning-button>
+                    </footer>
+
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+    </lightning-card>
+</template>

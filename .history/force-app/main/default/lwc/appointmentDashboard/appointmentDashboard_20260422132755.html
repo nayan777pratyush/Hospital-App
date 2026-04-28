@@ -1,0 +1,23 @@
+<template>
+    <lightning-card title="🏥 Appointment Dashboard" icon-name="standard:appointment">
+
+        <div class="slds-p-around_medium">
+
+            <!-- Search -->
+            <lightning-input
+                type="search"
+                label="Search Appointment"
+                onchange={handleSearch}>
+            </lightning-input>
+
+            <!-- Table -->
+            <lightning-datatable
+                key-field="Id"
+                data={filteredAppointments}
+                columns={columns}
+                class="slds-m-top_medium">
+            </lightning-datatable>
+
+        </div>
+    </lightning-card>
+</template>

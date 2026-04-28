@@ -1,0 +1,20 @@
+<apex:page controller="VFController">
+    
+    <h1 style="text-align:center; color:blue;">
+        Appointment Management
+    </h1>
+
+    <apex:pageBlock title="All Appointments">
+
+        <apex:pageBlockTable value="{!appointments}" var="a">
+
+            <apex:column value="{!a.Name}" headerValue="Appointment Name"/>
+            <apex:column value="{!a.Status__c}" headerValue="Status"/>
+            <apex:column value="{!a.Date__c}" headerValue="Date"/>
+            <apex:column value="{!a.Doctor__c}" headerValue="Doctor"/>
+
+        </apex:pageBlockTable>
+
+    </apex:pageBlock>
+
+</apex:page>
