@@ -163,79 +163,51 @@ openEditModal(row) {
     this.patientId = row.Patinet__c || null;  
     this.doctorId = row.Doctor__c || null;   
 
-const dt = new Date(row.Appointment_Date_Time__c);
+    const dt = new Date(row.Appointment_Date_Time__c);
 
-// fix timezone shift
-const local = new Date(dt.getTime() - (dt.getTimezoneOffset() * 60000));
-
-this.date = local.toISOString().split('T')[0];
-this.time = local.toTimeString().slice(0,5);   // HH:MM
+    this.date = dt.toISOString().split('T')[0];   // YYYY-MM-DD
+    this.time = dt.toTimeString().slice(0,5);     // HH:MM
 
     this.status = row.Status__c;
 }
 
 saveAppointment() {
+    const fixedDate = new Date(`${this.date}T${this.time}:00`).toISOString();
 
-    // 🚨 VALIDATION
-    if (!this.patientId || !this.doctorId || !this.date || !this.time) {
-        alert('Please fill all fields');
-        return;
-    }
-// console.log('--- DEBUG START ---');
-// console.log('Patient:', this.patientId);
-// console.log('Doctor:', this.doctorId);
-// console.log('Date:', this.date);
-// console.log('Time:', this.time);
-// console.log('Status:', this.status);
-// console.log('--- DEBUG END ---');
+    if (this.editRecordId) {
 
-    try {
-        // ✅ convert properly
-        const localDateTime = new Date(this.date + ' ' + this.time);
+        updateAppointment({
+            recordId: this.editRecordId,
+            patientId: this.patientId,
+            doctorId: this.doctorId,
+            dateValue: fixedDate,   
+            status: this.status
+        })
+        .then(() => {
+            this.updateLocalList();
+            this.closeModal();
+            // this.fetchAppointments();
+        })
+        .catch(error => {
+            console.error('ERROR:', error);
+            alert(error.body ? error.body.message : 'Unknown error');
+        });
 
-const fixedDate = new Date(
-    localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)
-).toISOString();
+    } else {
 
-        if (this.editRecordId) {
-
-            updateAppointment({
-                recordId: this.editRecordId,
-                patientId: this.patientId,
-                doctorId: this.doctorId,
-                dateValue: fixedDate,
-                status: this.status
-            })
-            .then(() => {
-                this.updateLocalList();
-                this.closeModal();
-            })
-            .catch(error => {
-                console.error('UPDATE ERROR:', error);
-                alert(error.body?.message || 'Update failed');
-            });
-
-        } else {
-
-            createAppointment({
-                patientId: this.patientId,
-                doctorId: this.doctorId,
-                appointmentDate: fixedDate,
-                status: this.status
-            })
-            .then(() => {
-                this.closeModal();
-                this.fetchAppointments();
-            })
-            .catch(error => {
-                console.error('CREATE ERROR:', error);
-                alert(error.body?.message || 'Create failed');
-            });
-        }
-
-    } catch (err) {
-        console.error('DATE ERROR:', err);
-        alert('Invalid date/time format');
+        createAppointment({
+            patientId: this.patientId,
+            doctorId: this.doctorId,
+            appointmentDate: fixedDate, 
+            status: this.status
+        })
+        .then(() => {
+            this.closeModal();
+            this.fetchAppointments();
+        })
+        .catch(error => {
+            console.error('FULL ERROR:', JSON.stringify(error));
+        });
     }
 }
 
@@ -314,10 +286,6 @@ handleSearch(event) {
 
 handleFilter(event) {
     this.filterStatus = event.target.value;
-}
-
-get modalTitle() {
-    return this.editRecordId ? '✏️ Edit Appointment' : '➕ Create Appointment';
 }
 
 

@@ -18,13 +18,13 @@ public with sharing class AppointmentService {
     public static void createAppointment(
         Id patientId,
         Id doctorId,
-        Datetime appointmentDate,
+        Datetime dateValue,
         String status
     ) {
         Appointment__c app = new Appointment__c(
             Patinet__c = patientId,
             Doctor__c = doctorId,
-            Appointment_Date_Time__c = appointmentDate,
+            Appointment_Date_Time__c = dateValue,
             Status__c = status
         );
         insert app;

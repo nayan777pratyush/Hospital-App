@@ -1,14 +1,12 @@
 .main-container {
     min-height: 100vh;
     display: flex;
-    flex-direction: column;   /* 🔥 IMPORTANT */
-    align-items: center;      /* center horizontally */
-    justify-content: flex-start; /* 🔥 NOT center vertically */
-
-    padding-top: 60px;
+    justify-content: center;
+    align-items: center;
 
     background: linear-gradient(135deg, #141e30, #243b55);
 }
+
 /* Glass Card */
 .dashboard-card {
     width: 420px;
@@ -54,7 +52,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
 }
 
 .modal-container {
@@ -82,7 +79,6 @@
 .stats-container {
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;   /* 🔥 prevents overflow */
     gap: 20px;
     margin: 30px 0;
 }
@@ -112,17 +108,4 @@
 
 .confirmed {
     background: linear-gradient(135deg, #00c6ff, #0072ff);
-}
-
-lightning-card {
-    width: 85%;
-    max-width: 900px;
-}
-.filter-container {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 20px;
-    width: 80%;
-    max-width: 900px;
 }

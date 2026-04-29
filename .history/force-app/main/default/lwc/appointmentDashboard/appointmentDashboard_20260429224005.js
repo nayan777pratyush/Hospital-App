@@ -316,10 +316,6 @@ handleFilter(event) {
     this.filterStatus = event.target.value;
 }
 
-get modalTitle() {
-    return this.editRecordId ? '✏️ Edit Appointment' : '➕ Create Appointment';
-}
-
 
 connectedCallback() {
     // Existing calls

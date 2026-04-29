@@ -53,7 +53,7 @@
             <section class="custom-modal">
                 <div class="modal-container">
 
-                    <h2>{modalTitle}</h2>
+                    <h2>Create Appointment</h2>
 
                     <!-- DROPDOWNS (IMPROVED UX) -->
                     <lightning-combobox
@@ -75,13 +75,6 @@
                         label="Date" 
                         value={date}
                         onchange={handleDate}>
-                    </lightning-input>
-                    
-                    <lightning-input 
-                        type="time"
-                        label="Time"
-                        value={time}
-                        onchange={handleTime}>
                     </lightning-input>
 
                     <lightning-combobox 
@@ -105,11 +98,10 @@
             <div class="slds-p-around_medium">
 
              <lightning-datatable
-                key-field="Id"
-                data={filteredAppointments}
-                columns={columns}
-                onrowaction={handleRowAction}
-                hide-checkbox-column>
+                 key-field="Id"
+                 data={filteredAppointments}
+                 columns={columns}
+                  hide-checkbox-column>
               </lightning-datatable>
 
             </div>

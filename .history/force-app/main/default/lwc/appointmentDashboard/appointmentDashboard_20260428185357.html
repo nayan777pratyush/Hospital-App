@@ -16,44 +16,12 @@
 
         </div>
 
-        <div class="stats-container">
-
-    <div class="stat-card total">
-        <p>Total</p>
-        <h2>{totalAppointments}</h2>
-    </div>
-
-    <div class="stat-card pending">
-        <p>Pending</p>
-        <h2>{pendingAppointments}</h2>
-    </div>
-
-    <div class="stat-card confirmed">
-        <p>Confirmed</p>
-        <h2>{confirmedAppointments}</h2>
-    </div>
-
-</div>
-
-<div class="filter-container">
-    <lightning-input
-        type="text"
-        placeholder="Search by Appointment / Doctor"
-        onchange={handleSearch}>
-    </lightning-input>
-
-    <lightning-combobox
-        value={filterStatus}
-        options={statusFilterOptions}
-        onchange={handleFilter}>
-    </lightning-combobox>
-</div>
         <!-- MODAL -->
         <template if:true={isModalOpen}>
             <section class="custom-modal">
                 <div class="modal-container">
 
-                    <h2>{modalTitle}</h2>
+                    <h2>Create Appointment</h2>
 
                     <!-- DROPDOWNS (IMPROVED UX) -->
                     <lightning-combobox
@@ -76,13 +44,6 @@
                         value={date}
                         onchange={handleDate}>
                     </lightning-input>
-                    
-                    <lightning-input 
-                        type="time"
-                        label="Time"
-                        value={time}
-                        onchange={handleTime}>
-                    </lightning-input>
 
                     <lightning-combobox 
                         label="Status"
@@ -102,19 +63,18 @@
 
         <lightning-card title="Appointments List" icon-name="standard:appointment">
 
-            <div class="slds-p-around_medium">
+    <div class="slds-p-around_medium">
 
-             <lightning-datatable
-                key-field="Id"
-                data={filteredAppointments}
-                columns={columns}
-                onrowaction={handleRowAction}
-                hide-checkbox-column>
-              </lightning-datatable>
+        <lightning-datatable
+            key-field="Id"
+            data={appointments}
+            columns={columns}
+            hide-checkbox-column>
+        </lightning-datatable>
 
-            </div>
+    </div>
 
-        </lightning-card>
+</lightning-card>
 
     </div>
 

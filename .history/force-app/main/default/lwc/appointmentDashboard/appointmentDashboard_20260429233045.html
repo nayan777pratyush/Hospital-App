@@ -53,50 +53,73 @@
             <section class="custom-modal">
                 <div class="modal-container">
 
-                    <h2>{modalTitle}</h2>
+    <div class="modal-header">
+        <h2>{modalTitle}</h2>
+        <lightning-badge label={modalTitle}></lightning-badge>
+    </div>
 
-                    <!-- DROPDOWNS (IMPROVED UX) -->
-                    <lightning-combobox
-                        label="Patient"
-                        value={patientId}
-                        options={patientOptions}
-                        onchange={handlePatient}>
-                    </lightning-combobox>
+    <!-- SECTION 1 -->
+    <div class="form-section">
+        <h3>👤 Patient & Doctor</h3>
 
-                    <lightning-combobox
-                        label="Doctor"
-                        value={doctorId}
-                        options={doctorOptions}
-                        onchange={handleDoctor}>
-                    </lightning-combobox>
+        <lightning-combobox
+            label="Patient"
+            value={patientId}
+            options={patientOptions}
+            onchange={handlePatient}>
+        </lightning-combobox>
 
-                    <lightning-input 
-                        type="date" 
-                        label="Date" 
-                        value={date}
-                        onchange={handleDate}>
-                    </lightning-input>
-                    
-                    <lightning-input 
-                        type="time"
-                        label="Time"
-                        value={time}
-                        onchange={handleTime}>
-                    </lightning-input>
+        <lightning-combobox
+            label="Doctor"
+            value={doctorId}
+            options={doctorOptions}
+            onchange={handleDoctor}>
+        </lightning-combobox>
+    </div>
 
-                    <lightning-combobox 
-                        label="Status"
-                        value={status}
-                        options={statusOptions}
-                        onchange={handleStatus}>
-                    </lightning-combobox>
+    <!-- SECTION 2 -->
+    <div class="form-section">
+        <h3>📅 Schedule</h3>
 
-                    <div class="modal-buttons">
-                        <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
-                        <lightning-button variant="brand" label="Save" onclick={saveAppointment}></lightning-button>
-                    </div>
+        <lightning-input 
+            type="date" 
+            label="Date" 
+            value={date}
+            onchange={handleDate}>
+        </lightning-input>
 
-                </div>
+        <lightning-input 
+            type="time"
+            label="Time"
+            value={time}
+            onchange={handleTime}>
+        </lightning-input>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="form-section">
+        <h3>⚙️ Status</h3>
+
+        <lightning-combobox 
+            label="Status"
+            value={status}
+            options={statusOptions}
+            onchange={handleStatus}>
+        </lightning-combobox>
+    </div>
+
+    <div class="modal-buttons">
+        <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+
+        <lightning-button 
+            variant="brand" 
+            label="Save" 
+            onclick={saveAppointment}
+            disabled={!isFormValid}>
+        </lightning-button>
+    </div>
+
+</div>
             </section>
         </template>
 

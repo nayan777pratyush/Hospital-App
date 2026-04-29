@@ -54,21 +54,6 @@ public with sharing class AppointmentService {
         update appt;
     }
 
-public static void assignDoctor(List<Appointment__c> appointments) {
-
-    List<Doctor__c> docs = [
-        SELECT Id FROM Doctor__c
-        WHERE Availability__c = true
-        LIMIT 1
-    ];
-
-    for (Appointment__c app : appointments) {
-        if (app.Doctor__c == null && !docs.isEmpty()) {
-            app.Doctor__c = docs[0].Id;
-        }
-    }
-}
-
     // ✅ DELETE
     @AuraEnabled
     public static void deleteAppointment(Id appointmentId) {

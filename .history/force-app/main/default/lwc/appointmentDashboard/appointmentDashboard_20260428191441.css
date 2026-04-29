@@ -54,7 +54,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
 }
 
 .modal-container {
@@ -116,13 +115,5 @@
 
 lightning-card {
     width: 85%;
-    max-width: 900px;
-}
-.filter-container {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 20px;
-    width: 80%;
     max-width: 900px;
 }

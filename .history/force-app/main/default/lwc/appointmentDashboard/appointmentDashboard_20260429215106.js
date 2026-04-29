@@ -163,13 +163,10 @@ openEditModal(row) {
     this.patientId = row.Patinet__c || null;  
     this.doctorId = row.Doctor__c || null;   
 
-const dt = new Date(row.Appointment_Date_Time__c);
+    const dt = new Date(row.Appointment_Date_Time__c);
 
-// fix timezone shift
-const local = new Date(dt.getTime() - (dt.getTimezoneOffset() * 60000));
-
-this.date = local.toISOString().split('T')[0];
-this.time = local.toTimeString().slice(0,5);   // HH:MM
+    this.date = dt.toISOString().split('T')[0];   // YYYY-MM-DD
+    this.time = dt.toTimeString().slice(0,5);     // HH:MM
 
     this.status = row.Status__c;
 }
@@ -181,21 +178,18 @@ saveAppointment() {
         alert('Please fill all fields');
         return;
     }
-// console.log('--- DEBUG START ---');
-// console.log('Patient:', this.patientId);
-// console.log('Doctor:', this.doctorId);
-// console.log('Date:', this.date);
-// console.log('Time:', this.time);
-// console.log('Status:', this.status);
-// console.log('--- DEBUG END ---');
+console.log('--- DEBUG START ---');
+console.log('Patient:', this.patientId);
+console.log('Doctor:', this.doctorId);
+console.log('Date:', this.date);
+console.log('Time:', this.time);
+console.log('Status:', this.status);
+console.log('--- DEBUG END ---');
 
     try {
         // ✅ convert properly
-        const localDateTime = new Date(this.date + ' ' + this.time);
-
-const fixedDate = new Date(
-    localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)
-).toISOString();
+        const dateTimeString = `${this.date}T${this.time}`;
+        const fixedDate = new Date(dateTimeString).toISOString();
 
         if (this.editRecordId) {
 
@@ -314,10 +308,6 @@ handleSearch(event) {
 
 handleFilter(event) {
     this.filterStatus = event.target.value;
-}
-
-get modalTitle() {
-    return this.editRecordId ? '✏️ Edit Appointment' : '➕ Create Appointment';
 }
 
 

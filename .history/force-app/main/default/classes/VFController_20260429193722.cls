@@ -4,7 +4,7 @@ public class VFController {
     
     public VFController(){
         appointments = [
-            SELECT Name, Status__c, Appointment_Date_Time__c, Doctor__c
+            SELECT Name, Status__c, Appointment_Date_Time__c
             FROM Appointment__c
         ];
     }

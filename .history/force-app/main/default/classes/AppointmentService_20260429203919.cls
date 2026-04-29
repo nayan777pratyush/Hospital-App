@@ -1,6 +1,5 @@
 public with sharing class AppointmentService {
 
-    // ✅ FETCH
     @AuraEnabled(cacheable=true)
     public static List<Appointment__c> getAppointments() {
         return [
@@ -13,12 +12,11 @@ public with sharing class AppointmentService {
         ];
     }
 
-    // ✅ CREATE
     @AuraEnabled
     public static void createAppointment(
         Id patientId,
         Id doctorId,
-        Datetime appointmentDate,
+        Datetime appointmentDate,   
         String status
     ) {
         Appointment__c app = new Appointment__c(
@@ -30,17 +28,52 @@ public with sharing class AppointmentService {
         insert app;
     }
 
-    // ✅ UPDATE
+    public static void assignDoctor(List<Appointment__c> appointments) {
+        List<Doctor__c> docs = [
+            SELECT Id FROM Doctor__c
+            WHERE Availability__c = true LIMIT 1
+        ];
+
+        for (Appointment__c app : appointments) {
+            if (app.Doctor__c == null && !docs.isEmpty()) {
+                app.Doctor__c = docs[0].Id;
+            }
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Patinet__c> getPatients() {
+        return [SELECT Id, Name FROM Patinet__c LIMIT 50];
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Doctor__c> getDoctors() {
+        return [SELECT Id, Name FROM Doctor__c WHERE Availability__c = true];
+    }
+
+    @AuraEnabled
+    public static void deleteAppointment(Id appointmentId) {
+        if (appointmentId == null) return;
+
+        List<Appointment__c> apps = [
+            SELECT Id FROM Appointment__c WHERE Id = :appointmentId LIMIT 1
+        ];
+
+        if (!apps.isEmpty()) {
+            delete apps;
+        }
+    }
+
     @AuraEnabled
     public static void updateAppointment(
         Id recordId,
         Id patientId,
         Id doctorId,
-        Datetime dateValue,
-        String status
+        Datetime dateValue,   
+        String status         
     ) {
         Appointment__c appt = [
-            SELECT Id
+            SELECT Id, Patinet__c, Doctor__c, Appointment_Date_Time__c, Status__c
             FROM Appointment__c
             WHERE Id = :recordId
             LIMIT 1
@@ -52,37 +85,5 @@ public with sharing class AppointmentService {
         appt.Status__c = status;
 
         update appt;
-    }
-
-public static void assignDoctor(List<Appointment__c> appointments) {
-
-    List<Doctor__c> docs = [
-        SELECT Id FROM Doctor__c
-        WHERE Availability__c = true
-        LIMIT 1
-    ];
-
-    for (Appointment__c app : appointments) {
-        if (app.Doctor__c == null && !docs.isEmpty()) {
-            app.Doctor__c = docs[0].Id;
-        }
-    }
-}
-
-    // ✅ DELETE
-    @AuraEnabled
-    public static void deleteAppointment(Id appointmentId) {
-        delete [SELECT Id FROM Appointment__c WHERE Id = :appointmentId LIMIT 1];
-    }
-
-    // ✅ DROPDOWNS
-    @AuraEnabled(cacheable=true)
-    public static List<Patinet__c> getPatients() {
-        return [SELECT Id, Name FROM Patinet__c LIMIT 50];
-    }
-
-    @AuraEnabled(cacheable=true)
-    public static List<Doctor__c> getDoctors() {
-        return [SELECT Id, Name FROM Doctor__c WHERE Availability__c = true];
     }
 }

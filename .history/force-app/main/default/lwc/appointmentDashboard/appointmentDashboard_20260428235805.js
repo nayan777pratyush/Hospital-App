@@ -7,6 +7,9 @@ import deleteAppointment from '@salesforce/apex/AppointmentService.deleteAppoint
 import updateAppointment from '@salesforce/apex/AppointmentService.updateAppointment';
 
 
+const fixedDate = this.date 
+        ? new Date(this.date + 'T00:00:00')
+        : null;
 
 export default class AppointmentDashboard extends LightningElement {
 
@@ -17,17 +20,7 @@ export default class AppointmentDashboard extends LightningElement {
     columns = [
         { label: 'Name', fieldName: 'Name' },
         { label: 'Status', fieldName: 'Status__c' },
-        {   label: 'Date & Time',
-            fieldName: 'Appointment_Date_Time__c',
-            type: 'date',
-            typeAttributes: {
-                year: "numeric",
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        },
+        { label: 'Date', fieldName: 'Date__c', type: 'date' },
         { label: 'Doctor', fieldName: 'DoctorName' },
         { label: 'Patient', fieldName: 'PatientName' },
         /*
@@ -72,7 +65,6 @@ export default class AppointmentDashboard extends LightningElement {
     patientId = '';
     doctorId = '';
     date = '';
-    time = '';
     status = 'Pending';
     editRecordId = null;
 
@@ -97,9 +89,8 @@ closeModal() {
 
     this.patientId = null;
     this.doctorId = null;
-    this.date = '';
-    this.time = '';
-    this.status = 'Pending';
+    this.date = null;
+    this.status = null;
 
     this.editRecordId = null;
 }
@@ -116,32 +107,9 @@ closeModal() {
         this.date = event.target.value;
     }
 
-    handleTime(event) {
-        this.time = event.target.value;
-    } 
-
     handleStatus(event) {
         this.status = event.target.value;
     }
-
-updateLocalList() {
-    this.appointments = this.appointments.map(item => {
-        if (item.Id === this.editRecordId) {
-            return {
-                ...item,
-                Patinet__c: this.patientId,
-                Doctor__c: this.doctorId,
-                Appointment_Date_Time__c: new Date(`${this.date}T${this.time}:00`).toISOString(),
-                Status__c: this.status,
-                DoctorName: this.getDoctorName(this.doctorId),
-                PatientName: this.getPatientName(this.patientId)
-            };
-        }
-        return item;
-    });
-
-    this.appointments = [...this.appointments]; // 🔥 force re-render
-}
 
 handleRowAction(event) {
     const actionName = event.detail.action.name;
@@ -160,82 +128,41 @@ openEditModal(row) {
 
     this.editRecordId = row.Id;
 
-    this.patientId = row.Patinet__c || null;  
-    this.doctorId = row.Doctor__c || null;   
-
-const dt = new Date(row.Appointment_Date_Time__c);
-
-// fix timezone shift
-const local = new Date(dt.getTime() - (dt.getTimezoneOffset() * 60000));
-
-this.date = local.toISOString().split('T')[0];
-this.time = local.toTimeString().slice(0,5);   // HH:MM
-
+    this.patientId = row.Patinet__c;  
+    this.doctorId = row.Doctor__c;     
+    this.date = row.Date__c;
     this.status = row.Status__c;
 }
 
 saveAppointment() {
+    if (this.editRecordId) {
 
-    // 🚨 VALIDATION
-    if (!this.patientId || !this.doctorId || !this.date || !this.time) {
-        alert('Please fill all fields');
-        return;
-    }
-// console.log('--- DEBUG START ---');
-// console.log('Patient:', this.patientId);
-// console.log('Doctor:', this.doctorId);
-// console.log('Date:', this.date);
-// console.log('Time:', this.time);
-// console.log('Status:', this.status);
-// console.log('--- DEBUG END ---');
+        updateAppointment({
+            recordId: this.editRecordId,
+            patientId: this.patientId,
+            doctorId: this.doctorId,
+            dateValue: fixedDate,   
+            status: this.status
+        })
+        .then(() => {
+            this.closeModal();
+            this.fetchAppointments();
+        })
+        .catch(error => console.error(error));
 
-    try {
-        // ✅ convert properly
-        const localDateTime = new Date(this.date + ' ' + this.time);
+    } else {
 
-const fixedDate = new Date(
-    localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)
-).toISOString();
-
-        if (this.editRecordId) {
-
-            updateAppointment({
-                recordId: this.editRecordId,
-                patientId: this.patientId,
-                doctorId: this.doctorId,
-                dateValue: fixedDate,
-                status: this.status
-            })
-            .then(() => {
-                this.updateLocalList();
-                this.closeModal();
-            })
-            .catch(error => {
-                console.error('UPDATE ERROR:', error);
-                alert(error.body?.message || 'Update failed');
-            });
-
-        } else {
-
-            createAppointment({
-                patientId: this.patientId,
-                doctorId: this.doctorId,
-                appointmentDate: fixedDate,
-                status: this.status
-            })
-            .then(() => {
-                this.closeModal();
-                this.fetchAppointments();
-            })
-            .catch(error => {
-                console.error('CREATE ERROR:', error);
-                alert(error.body?.message || 'Create failed');
-            });
-        }
-
-    } catch (err) {
-        console.error('DATE ERROR:', err);
-        alert('Invalid date/time format');
+        createAppointment({
+            patientId: this.patientId,
+            doctorId: this.doctorId,
+            appointmentDate: fixedDate, 
+            status: this.status
+        })
+        .then(() => {
+            this.closeModal();
+            this.fetchAppointments();
+        })
+        .catch(error => console.error(error));
     }
 }
 
@@ -258,13 +185,12 @@ fetchAppointments() {
 deleteAppointment(recordId) {
     deleteAppointment({ appointmentId: recordId })
         .then(() => {
-            this.appointments = this.appointments.filter(
-                item => item.Id !== recordId
-            );
-
-            this.appointments = [...this.appointments];
+            console.log('Deleted:', recordId);
+            this.fetchAppointments();
         })
-        .catch(error => console.error('Delete error:', error));
+        .catch(error => {
+            console.error('Delete error:', error);
+        });
 }
 
 get totalAppointments() {
@@ -298,26 +224,12 @@ get filteredAppointments() {
     return data;
 }
 
-getDoctorName(id) {
-    const doc = this.doctorOptions.find(d => d.value === id);
-    return doc ? doc.label : '';
-}
-
-getPatientName(id) {
-    const pat = this.patientOptions.find(p => p.value === id);
-    return pat ? pat.label : '';
-}
-
 handleSearch(event) {
     this.searchKey = event.target.value;
 }
 
 handleFilter(event) {
     this.filterStatus = event.target.value;
-}
-
-get modalTitle() {
-    return this.editRecordId ? '✏️ Edit Appointment' : '➕ Create Appointment';
 }
 
 

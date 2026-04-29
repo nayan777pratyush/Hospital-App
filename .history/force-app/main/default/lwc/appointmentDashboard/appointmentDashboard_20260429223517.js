@@ -193,9 +193,10 @@ saveAppointment() {
         // ✅ convert properly
         const localDateTime = new Date(this.date + ' ' + this.time);
 
+// 🔥 convert to ISO WITHOUT timezone shift
 const fixedDate = new Date(
     localDateTime.getTime() - (localDateTime.getTimezoneOffset() * 60000)
-).toISOString();
+).toISOString().slice(0,19);
 
         if (this.editRecordId) {
 
@@ -314,10 +315,6 @@ handleSearch(event) {
 
 handleFilter(event) {
     this.filterStatus = event.target.value;
-}
-
-get modalTitle() {
-    return this.editRecordId ? '✏️ Edit Appointment' : '➕ Create Appointment';
 }
 
 
